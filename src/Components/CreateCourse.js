@@ -48,7 +48,6 @@ class CreateCourse extends Component {
                                             onChange={this.change}
                                             value={title} 
                                             placeholder="Course Title"
-                                            required
                                         />
 
                                     <p>
@@ -63,7 +62,6 @@ class CreateCourse extends Component {
                                             name="description" 
                                             onChange={this.change} 
                                             id="courseDescription"
-                                            required
                                         />
                                     </label>
                                 </div>
@@ -121,6 +119,7 @@ class CreateCourse extends Component {
             description,
             estimatedTime,
             materialsNeeded,
+            errors
         } = this.state;
 
         const course = {
@@ -128,29 +127,23 @@ class CreateCourse extends Component {
             description,
             estimatedTime,
             materialsNeeded,
+            errors,
             //userId is needed to get a 201 status code from api
             userId: authUser.userId
         };
 
-        //createCourse method takes credentials from context api and course variable to execute request 
         context.data.createCourse(course, authUser.emailAddress, authUser.password)
-            .then(errors => {
-                if(errors.length){
-                    this.setState({errors})
+            .then((response) => {
+                if(response === "success"){
+                    console.log(`Username ${authUser.emailAddress} 
+                    successfully created: ${course}`);
+                    this.props.history.push('/');
+                } else if (response === "forbidden"){
+                    this.props.history.push("/forbidden")
                 } else {
-                    if(course.title === "" || course.description === ""){
-                        this.setState({
-                            errors: [...this.state.errors, "Title and description can not be empty!"]
-                        });
-                    } else {
-                        console.log(`Username ${authUser.emailAddress} 
-                        successfully created: ${course}`);
-                        this.props.history.push('/');
-                        }
-                    }
+                    this.setState({errors: [...errors, response]})
                 }
-            )
-            .catch(err => {
+            }).catch(err => {
                 console.log(err);
                 this.props.history.push("/error");
             })

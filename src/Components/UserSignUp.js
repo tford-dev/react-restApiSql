@@ -89,6 +89,7 @@ export default class UserSignUp extends Component {
             lastName,
             emailAddress,
             password,
+            errors
         } = this.state;
 
         //Variable that contains values from keys in state of this component that will be sent to api
@@ -97,30 +98,30 @@ export default class UserSignUp extends Component {
             lastName,
             emailAddress,
             password,
+            errors
         };
 
-        //updateCourse method takes credentials from context api and course variable to execute request 
+        //createUser method takes credentials from context api and course variable to execute request 
         context.data.createUser(user)
             .then(errors => {
                 if(errors.length){
-                    this.setState({errors})
+                    this.setState({errors: [errors]})
                 } else {
                     context.actions.signIn(emailAddress, password)
                         .then(() => {
-                            this.props.history.push("/authenticated");
+                            this.props.history.push("/");
                         })
-                        console.log(`${emailAddress} is successfully signed up and authorized!`);
-                    }
+                    console.log(`${emailAddress} is successfully signed up and authorized!`);
+                }
             })
-            .catch(err => {
-                console.log(err);
-                this.props.history.push("/error");
-            })
+                .catch(err => {
+                    console.log(err);
+                    this.props.history.push("/error");
+                })
     }
 
     cancel = () => {
         this.props.history.push('/');
+        window.location.reload();
     }
-
-  
 }

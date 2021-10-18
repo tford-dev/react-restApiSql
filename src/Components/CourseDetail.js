@@ -97,7 +97,7 @@ class CourseDetail extends Component {
                             setTimeout(function(){<NotFound />}, 500)
                             :
                                 <div className="wrap">
-                                    <h2>CourseDetail</h2>
+                                    <h2>Course Detail</h2>
                                     <form>
                                         <div className="main--flex">
                                             <div>

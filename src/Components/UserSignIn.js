@@ -16,7 +16,6 @@ export default class UserSignIn extends Component {
       password,
       errors,
     } = this.state;
-
     return (
         <div className="form--centered">
             <h2>Sign In</h2>
@@ -71,26 +70,31 @@ export default class UserSignIn extends Component {
         const {emailAddress, password} = this.state;
 
         //signIn method is grabbed from actions object that is nested in value variable in ../Context.js
-        context.actions.signIn(emailAddress, password)
-            .then(user => {
-                //If user does not exist, this.state.errors is pushed an error message that will be rendered to user
-                if(user === null){
-                    this.setState(()=>{
-                        return {errors: ["Sign-in was unsuccessful"]};
+        
+            context.actions.signIn(emailAddress, password)
+                .then((user) => {
+                    //If user does not exist, this.state.errors is pushed an error message that will be rendered to user
+                    if(user === null){
+                        this.setState(()=>{
+                            return {errors: ["Sign-in was unsuccessful"]};
+                        })
+                    //If sign in is successful, user is redirected to previous page or private route
+                    } else {
+                        this.props.history.push(from);
+                        if(window.location.pathname === "/error"){
+                            this.props.history.push("/")
+                        } 
+                        console.log(`${emailAddress} is now signed in!`);
+                    }
                 })
-                //If sign in is successful, user is redirected to previous page or private route
-                } else {
-                    this.props.history.push(from);
-                    console.log(`${emailAddress} is now signed in!`);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                this.props.history.push("/error");
-            })
+                .catch(err => {
+                    console.log(err);
+                    this.props.history.push("/error");
+                })
     }
 
     cancel = () => {
         this.props.history.push('/');
+        window.location.reload();
     }
 }
