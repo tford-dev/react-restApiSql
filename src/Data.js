@@ -1,6 +1,6 @@
 class Data {
     api(path, method = 'GET', body = null, requiresAuth = false, credentials = null) {
-        const api = 'http://localhost:5000/api';
+        const api = 'https://restapisql-tford.herokuapp.com/api';
         const url = api + path;
 
         const options = {
