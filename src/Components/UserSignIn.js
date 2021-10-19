@@ -67,7 +67,7 @@ export default class UserSignIn extends Component {
 
         // {from} returns user to privateRoute that user tried to access after being authenticated or previous page before requesting to sign in
         const {from} = this.props.location.state || {from: {pathname: this.props.history.goBack()}};
-        const {emailAddress, password} = this.state;
+        const {emailAddress, password, errors} = this.state;
 
         //signIn method is grabbed from actions object that is nested in value variable in ../Context.js
         
@@ -76,14 +76,14 @@ export default class UserSignIn extends Component {
                     //If user does not exist, this.state.errors is pushed an error message that will be rendered to user
                     if(user === null){
                         this.setState(()=>{
-                            return {errors: ["Sign-in was unsuccessful"]};
+                            return {errors: [...errors, "Sign-In was unsuccessful."]}
                         })
                     //If sign in is successful, user is redirected to previous page or private route
                     } else {
                         this.props.history.push(from);
                         if(window.location.pathname === "/error"){
                             this.props.history.push("/")
-                        } 
+                        }
                         console.log(`${emailAddress} is now signed in!`);
                     }
                 })
