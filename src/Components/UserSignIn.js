@@ -2,51 +2,70 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Form from './Form';
 
-export default class UserSignIn extends Component {
-  state = {
-    emailAddress: '',
-    password: '',
-    errors: [],
-  }
-  
-  render() {
-    //What user types into input boxes becomes is set to the corresponding state key using this.change on line 54
-    const {
-      emailAddress,
-      password,
-      errors,
-    } = this.state;
-    return (
-        <div className="form--centered">
-            <h2>Sign In</h2>
-            <Form 
-                cancel={this.cancel}
-                errors={errors}
-                submit={this.submit}
-                submitButtonText="Sign In"
-                elements={() => (
-                    <React.Fragment>
-                    <label htmlFor="emailAddress">Email Address</label>
-                    <input 
-                        id="emailAddress" 
-                        name="emailAddress" 
-                        type="email" 
-                        onChange={this.change} 
-                        placeholder={emailAddress}/>
-                    <label htmlFor="password">Password</label>
-                    <input 
-                        id="password" 
-                        name="password"
-                        type="password" 
-                        onChange={this.change} 
-                        placeholder={password} />                
-                    </React.Fragment>
-            )} />
-            <p>
-            Don't have a user account? <Link to="/signup">Click here</Link> to sign up!
-            </p>
-        </div>
-        );
+export default class UserSignUp extends Component {
+    state = {
+        firstName: '',
+        lastName: '',
+        emailAddress: '',
+        password: '',
+        errors: [],
+    }
+
+    render() {
+        //What user types into input boxes becomes is set to the corresponding state key using this.change 
+        const {
+            firstName,
+            lastName,
+            emailAddress,
+            password,
+            errors,
+        } = this.state;
+
+        return (
+            <div className="form--centered">
+                <h2>Sign Up</h2>
+                <Form 
+                    cancel={this.cancel}
+                    errors={errors}
+                    submit={this.submit}
+                    submitButtonText="Sign Up"
+                    elements={() => (
+                        <React.Fragment>
+                            <label htmlFor="firstName">First Name</label>
+                            <input
+                                id="firstName"
+                                name="firstName"
+                                type="text"
+                                onChange={this.change} 
+                                placeholder={firstName}/>
+                            <label htmlFor="lastName">Last Name</label>
+                            <input
+                                id="lastName" 
+                                name="lastName" 
+                                type="text" 
+                                onChange={this.change} 
+                                placeholder={lastName}/>
+                            <label htmlFor="emailAddress">Email Address</label>
+                            <input 
+                                id="emailAddress" 
+                                name="emailAddress" 
+                                type="email"
+                                onChange={this.change} 
+                                placeholder={emailAddress}/>
+                            <label htmlFor="password">Password</label>
+                            <input 
+                                id="password" 
+                                name="password"
+                                type="password"
+                                onChange={this.change} 
+                                placeholder={password} />                
+                        </React.Fragment>
+                )} />
+                <p>
+                    Already have a user account? <Link to="/signin">Click here</Link> to sign in!
+                </p>
+            </div>
+            );
     }
 
     //simple method to modify state value based on what is typed in input/textarea elements
@@ -65,28 +84,36 @@ export default class UserSignIn extends Component {
     submit = () => {
         const {context} = this.props;
 
-        // {from} returns user to privateRoute that user tried to access after being authenticated or previous page before requesting to sign in
-        const {from} = this.props.location.state || {from: {pathname: this.props.history.goBack()}};
-        const {emailAddress, password, errors} = this.state;
+        const {
+            firstName,
+            lastName,
+            emailAddress,
+            password,
+            errors
+        } = this.state;
 
-        //signIn method is grabbed from actions object that is nested in value variable in ../Context.js
-        
-            context.actions.signIn(emailAddress, password)
-                .then((user) => {
-                    //If user does not exist, this.state.errors is pushed an error message that will be rendered to user
-                    if(user === null){
-                        this.setState(()=>{
-                            return {errors: [...errors, "Sign-In was unsuccessful."]}
+        //Variable that contains values from keys in state of this component that will be sent to api
+        const user = {
+            firstName,
+            lastName,
+            emailAddress,
+            password,
+            errors
+        };
+
+        //createUser method takes credentials from context api and course variable to execute request 
+        context.data.createUser(user)
+            .then(errors => {
+                if(errors.length){
+                    this.setState({errors: [errors]})
+                } else {
+                    context.actions.signIn(emailAddress, password)
+                        .then(() => {
+                            this.props.history.push("/");
                         })
-                    //If sign in is successful, user is redirected to previous page or private route
-                    } else {
-                        this.props.history.push(from);
-                        if(window.location.pathname === "/error"){
-                            this.props.history.push("/")
-                        }
-                        console.log(`${emailAddress} is now signed in!`);
-                    }
-                })
+                    console.log(`${emailAddress} is successfully signed up and authorized!`);
+                }
+            })
                 .catch(err => {
                     console.log(err);
                     this.props.history.push("/error");
